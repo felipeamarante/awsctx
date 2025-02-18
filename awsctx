@@ -1,0 +1,24 @@
+# Simple AWS Profile Switcher
+function awsctx() {
+    # Colors
+    local BLUE=$'\033[0;34m'
+    local YELLOW=$'\033[1;33m'
+    local NC=$'\033[0m'
+
+    # If no arguments, list profiles
+    if [ -z "$1" ]; then
+        echo "${BLUE}Available profiles:${NC}"
+        aws configure list-profiles | nl -w2 -s') '
+        echo "${BLUE}Current profile:${NC} ${YELLOW}${AWS_PROFILE:-default}${NC}"
+        return
+    fi
+
+    # Switch to specified profile
+    if aws configure list-profiles | grep -q "^${1}$"; then
+        export AWS_PROFILE="$1"
+        echo "${BLUE}Switched to profile:${NC} ${YELLOW}${AWS_PROFILE}${NC}"
+    else
+        echo "${YELLOW}Profile not found: $1${NC}"
+        return 1
+    fi
+}
